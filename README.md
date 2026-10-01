@@ -5,7 +5,7 @@
 
 An end-to-end data pipeline for European football: historical and daily match data loaded into PostgreSQL, modelled with dbt, used to predict upcoming matches, and published on a live dashboard that tracks the model's real accuracy.
 
-> 🚧 Work in progress. Steps 1 to 5 are done: the pipeline now runs by itself every day. Next: the live dashboard.
+**Live dashboard: [link coming after deployment]** · runs by itself every morning · predictions published before kickoff and scored afterwards
 
 ## Architecture
 
@@ -31,7 +31,7 @@ Premier League, Championship, La Liga, Bundesliga, Serie A, Ligue 1, Eredivisie 
 - [x] **Step 3:** dbt models: unified matches, standings, form, home advantage, with data tests
 - [x] **Step 4:** Elo ratings and prediction model (Elo + Poisson), benchmarked against bookmaker odds
 - [x] **Step 5:** GitHub Actions automation: daily pipeline on a cloud PostgreSQL database (Neon), tests on every push
-- [ ] **Step 6:** live Streamlit dashboard
+- [x] **Step 6:** live Streamlit dashboard: predictions, track record, league tables, team Elo ratings
 
 ## Getting started
 
@@ -144,6 +144,17 @@ The daily pipeline writes to a free [Neon](https://neon.tech) PostgreSQL databas
 
 dbt reads its connection from `DBT_*` variables, which `python -m src.dbt_env` derives from `DATABASE_URL`, so the connection string is stored only once.
 
+## Dashboard (step 6)
+
+A Streamlit app reading the Neon database, with five pages: upcoming predictions, the model's track record (live and backtest), league tables, team Elo ratings, and how the pipeline works.
+
+```bash
+pip install -r dashboard/requirements.txt
+streamlit run dashboard/app.py          # from the project root, so .streamlit/config.toml is used
+```
+
+Locally it reads `DATABASE_URL` from `.env`. On Streamlit Community Cloud, the connection string goes in the app's secrets as `DATABASE_URL = "postgresql+psycopg://..."`.
+
 ## Checking the data
 
 ```sql
@@ -187,7 +198,7 @@ Database tests run in a separate `football_test` database created automatically,
 │   ├── models/predictions/          # track record and current ratings (step 4)
 │   ├── seeds/                       # team_name_map.csv (step 2), leagues.csv
 │   └── tests/                       # football logic tests
-├── dashboard/                       # step 6
+├── dashboard/                       # step 6: Streamlit app (app.py, views/, data.py)
 └── docker-compose.yml
 ```
 
