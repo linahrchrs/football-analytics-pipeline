@@ -21,6 +21,11 @@ models:
     marts:
       +schema: marts
       +materialized: table
+    predictions:
+      # Built AFTER the Python model has run (step 4): dbt build --select tag:predictions
+      +schema: marts
+      +materialized: table
+      +tags: ["predictions"]
 
 seeds:
   football_analytics:

@@ -2,7 +2,7 @@
 
 An end-to-end data pipeline for European football: historical and daily match data loaded into PostgreSQL, modelled with dbt, used to predict upcoming matches, and published on a live dashboard that tracks the model's real accuracy.
 
-> 🚧 Work in progress. Steps 1 to 3 (ingestion and dbt models) are done.
+> 🚧 Work in progress. Steps 1 to 4 (ingestion, dbt models and prediction model) are done.
 
 ## Architecture
 
@@ -26,7 +26,7 @@ Premier League, Championship, La Liga, Bundesliga, Serie A, Ligue 1, Eredivisie 
 - [x] **Step 1:** historical backfill from football-data.co.uk
 - [x] **Step 2:** current-season updates from the football-data.org API, with automatic team-name mapping between the two sources
 - [x] **Step 3:** dbt models: unified matches, standings, form, home advantage, with data tests
-- [ ] **Step 4:** Elo ratings and prediction model (Elo + Poisson), benchmarked against bookmaker odds
+- [x] **Step 4:** Elo ratings and prediction model (Elo + Poisson), benchmarked against bookmaker odds
 - [ ] **Step 5:** GitHub Actions automation
 - [ ] **Step 6:** live Streamlit dashboard
 
@@ -79,9 +79,10 @@ python -m src.ingestion.backfill_history --refresh                 # re-download
 
 ```bash
 cd dbt
-dbt seed --profiles-dir .      # loads team_name_map.csv and leagues.csv
-dbt build --profiles-dir .     # builds every model and runs every test
+dbt build --profiles-dir . --exclude tag:predictions   # seeds, models and tests
 ```
+
+The `predictions` models read the model's output, so they are built after step 4.
 
 By default dbt connects to the local Docker database (port 5433). To use another database, set `DBT_HOST`, `DBT_PORT`, `DBT_USER`, `DBT_PASSWORD`, `DBT_DBNAME` and `DBT_SSLMODE`.
 
@@ -101,6 +102,29 @@ Besides standard tests (unique keys, accepted values, relationships), custom tes
 
 To browse the models and their lineage graph: `dbt docs generate --profiles-dir .` then `dbt docs serve --profiles-dir .`
 
+## Prediction model (step 4)
+
+```bash
+python -m src.model.run all                              # Elo ratings, backtest, predictions
+cd dbt && dbt build --profiles-dir . --select tag:predictions && cd ..
+```
+
+**Elo ratings.** Every team starts at 1500 and gains or loses points after each match, more for an unexpected result or a wide margin. Ratings carry over between seasons (pulled slightly toward the average) and between divisions, so a promoted team keeps its strength. Elo is computed in Python because each rating depends on the previous one, which is natural in a loop and awkward in SQL.
+
+**Goals model.** Two Poisson regressions predict each team's expected goals from the Elo difference (with home advantage), both teams' form over their last 5 matches, and the league's average goals the previous season. The two expected-goal values give the probability of every scoreline, which add up to home win, draw and away win probabilities. Every feature uses only information available before kickoff.
+
+**Evaluation.** A walk-forward backtest trains on earlier seasons and scores the next one, for the last 3 completed seasons. The model is compared with a naive baseline (historical home/draw/away rates) and with bookmaker odds, using accuracy, log loss, Brier score and the ranked probability score (RPS), the standard metric for football predictions. Bookmakers are a very strong benchmark: getting close to them is the realistic goal.
+
+**Track record.** Predictions are stored forever in `model.match_predictions` and never overwritten. `fct_prediction_results` takes the last prediction made before each match and compares it with the result, so the dashboard can show how the model actually performs on matches it had not seen.
+
+| Table | Contents |
+|---|---|
+| `model.elo_ratings` | Each team's rating before and after every match |
+| `model.backtest_results` | Backtest scores for the model, bookmakers and the baseline |
+| `model.match_predictions` | Every prediction ever made |
+| `marts.fct_prediction_results` | Last prediction before each match, with the result and its score |
+| `marts.fct_team_ratings` | Current Elo rating and league rank of every team |
+
 ## Checking the data
 
 ```sql
@@ -118,7 +142,7 @@ A complete Premier League season has 380 matches.
 pytest
 ```
 
-Parsing tests always run. Database tests run when PostgreSQL is up and are skipped otherwise.
+Database tests run in a separate `football_test` database created automatically, so they never touch the pipeline's data. They are skipped when PostgreSQL is not running.
 
 ## Project structure
 
@@ -130,12 +154,17 @@ Parsing tests always run. Database tests run when PostgreSQL is up and are skipp
 │       ├── backfill_history.py      # step 1: historical CSV files
 │       ├── fetch_api_matches.py     # step 2: current season from the API
 │       └── build_team_map.py        # step 2: team-name mapping between sources
+│   └── model/
+│       ├── elo.py                   # step 4: Elo ratings
+│       ├── poisson_model.py         # step 4: features, goals model, metrics
+│       └── run.py                   # step 4: backtest and predictions
 ├── sql/init/                        # raw schema, also run by Docker on first start
 ├── tests/                           # pytest tests and sample CSV files
 ├── dbt/                             # step 3: dbt project
 │   ├── models/staging/              # cleaned sources
 │   ├── models/intermediate/         # unified matches, one row per team per match
 │   ├── models/marts/                # standings, form, league stats
+│   ├── models/predictions/          # track record and current ratings (step 4)
 │   ├── seeds/                       # team_name_map.csv (step 2), leagues.csv
 │   └── tests/                       # football logic tests
 ├── dashboard/                       # step 6

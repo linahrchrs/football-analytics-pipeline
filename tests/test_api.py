@@ -1,7 +1,7 @@
 """Tests for the football-data.org ingestion and the team-name mapping.
 
 The API is never called: requests are answered from tests/fixtures/api_PL_matches.json.
-Database tests run only when PostgreSQL is reachable.
+Database tests use a separate test database (see conftest.py).
 """
 import json
 from datetime import date
@@ -11,7 +11,6 @@ import pandas as pd
 import pytest
 from sqlalchemy import text
 
-from src.db import get_engine, init_schema
 from src.ingestion import fetch_api_matches as api
 from src.ingestion.backfill_history import read_raw_csv, standardize
 from src.ingestion.backfill_history import upsert as upsert_history
@@ -95,28 +94,13 @@ def test_mapping_prefers_results_and_falls_back_to_fuzzy():
     assert m.loc[66, "csv_team_name"] == "Man United" and m.loc[66, "method"] == "fuzzy"
 
 
-def db_available():
-    try:
-        with get_engine().connect() as conn:
-            conn.execute(text("SELECT 1"))
-        return True
-    except Exception:
-        return False
-
-
-@pytest.mark.skipif(not db_available(), reason="PostgreSQL not running")
-def test_api_upsert_and_votes_against_history():
-    engine = get_engine()
-    init_schema(engine)
-    with engine.begin() as conn:
-        conn.execute(text("DELETE FROM raw.api_matches WHERE competition_code = 'PL' AND season = '2023-24'"))
-
+def test_api_upsert_and_votes_against_history(test_engine):
     df = api.parse_matches(PAYLOAD, "E0")
-    api.upsert(engine, df)
-    api.upsert(engine, df)                       # idempotent
-    upsert_history(engine, standardize(read_raw_csv(FIXTURES / "E0_2324.csv"), "E0", 2023, "E0_2324.csv"))
+    api.upsert(test_engine, df)
+    api.upsert(test_engine, df)                  # idempotent
+    upsert_history(test_engine, standardize(read_raw_csv(FIXTURES / "E0_2324.csv"), "E0", 2023, "E0_2324.csv"))
 
-    with engine.connect() as conn:
+    with test_engine.connect() as conn:
         assert conn.execute(text("SELECT count(*) FROM raw.api_matches WHERE season='2023-24' AND competition_code='PL'")).scalar() == 4
         votes = pd.read_sql(text(VOTES_SQL), conn)
     pairs = set(zip(votes["api_team_name"], votes["csv_team_name"]))

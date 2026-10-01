@@ -1,0 +1,34 @@
+version: 2
+
+sources:
+  - name: model
+    schema: model
+    description: Outputs of the Python prediction model (src/model/run.py).
+    tables:
+      - name: match_predictions
+        description: Every prediction ever made, never overwritten.
+      - name: elo_ratings
+        description: Each team's Elo rating before and after every played match.
+      - name: backtest_results
+        description: Walk-forward backtest scores for the model, bookmakers and a baseline.
+
+models:
+  - name: fct_prediction_results
+    description: >
+      The last prediction made before each match, with the result once it is played.
+      This is the model's real track record: predictions are compared with results
+      the model could not have seen.
+    columns:
+      - name: match_key
+        tests: [unique, not_null]
+      - name: predicted_result
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["H", "D", "A"]
+
+  - name: fct_team_ratings
+    description: Current Elo rating of every team, with its rank in its league and its recent change.
+    columns:
+      - name: team
+        tests: [not_null]

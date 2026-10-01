@@ -1,7 +1,7 @@
 """Tests for the historical backfill.
 
-Parsing tests run anywhere. Database tests run only when PostgreSQL is reachable
-(start it with `docker compose up -d`), otherwise they are skipped.
+Parsing tests run anywhere. Database tests use a separate test database (see
+conftest.py) and are skipped when PostgreSQL is not running.
 """
 from datetime import date, time
 from pathlib import Path
@@ -10,7 +10,6 @@ import pytest
 from sqlalchemy import text
 
 from src.config import season_code, season_label
-from src.db import get_engine, init_schema
 from src.ingestion.backfill_history import current_season_start, read_raw_csv, standardize, upsert
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -51,29 +50,14 @@ def test_old_file_latin1_short_dates_missing_columns_and_duplicates():
     assert df.iloc[0]["season"] == "2015-16"
 
 
-def db_available():
-    try:
-        with get_engine().connect() as conn:
-            conn.execute(text("SELECT 1"))
-        return True
-    except Exception:
-        return False
-
-
-@pytest.mark.skipif(not db_available(), reason="PostgreSQL not running")
-def test_upsert_is_idempotent_and_updates():
-    engine = get_engine()
-    init_schema(engine)
-    with engine.begin() as conn:
-        conn.execute(text("DELETE FROM raw.historical_matches WHERE source_file LIKE '%.csv' AND league_code IN ('E0','SP1') AND season IN ('2023-24','2015-16')"))
-
+def test_upsert_is_idempotent_and_updates(test_engine):
     df = load("E0_2324.csv", "E0", 2023)
-    upsert(engine, df)
-    upsert(engine, df)                                    # running twice must not duplicate
+    upsert(test_engine, df)
+    upsert(test_engine, df)                               # running twice must not duplicate
     df.loc[df.index[0], "home_goals"] = 1                 # a corrected score gets updated
-    upsert(engine, df)
+    upsert(test_engine, df)
 
-    with engine.connect() as conn:
+    with test_engine.connect() as conn:
         n = conn.execute(text("SELECT count(*) FROM raw.historical_matches WHERE league_code='E0' AND season='2023-24'")).scalar()
         goals = conn.execute(text("SELECT home_goals FROM raw.historical_matches WHERE home_team='Burnley' AND match_date='2023-08-11'")).scalar()
     assert n == 2
