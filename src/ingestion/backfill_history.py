@@ -9,6 +9,7 @@ Usage:
     python -m src.ingestion.backfill_history --leagues E0 SP1     # only some leagues
     python -m src.ingestion.backfill_history --first 2020 --last 2025
     python -m src.ingestion.backfill_history --refresh            # re-download cached files
+    python -m src.ingestion.backfill_history --current            # only the current season, always re-downloaded
 """
 from __future__ import annotations
 
@@ -207,7 +208,12 @@ def main() -> None:
     parser.add_argument("--first", type=int, default=FIRST_SEASON, help="first season start year (default: %(default)s)")
     parser.add_argument("--last", type=int, default=current_season_start() - 1, help="last season start year (default: last completed season)")
     parser.add_argument("--refresh", action="store_true", help="re-download files already in the cache")
+    parser.add_argument("--current", action="store_true",
+                        help="load only the current season and re-download it (used by the daily pipeline)")
     args = parser.parse_args()
+    if args.current:
+        args.first = args.last = current_season_start()
+        args.refresh = True
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s", datefmt="%H:%M:%S")
     run(args.leagues, args.first, args.last, refresh=args.refresh)

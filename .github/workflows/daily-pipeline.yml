@@ -1,0 +1,56 @@
+# Runs the whole pipeline every morning, before the day's matches:
+# ingest new results and fixtures -> rebuild dbt models -> predict upcoming matches.
+name: Daily pipeline
+
+on:
+  schedule:
+    - cron: "0 5 * * *"        # every day at 05:00 UTC
+  workflow_dispatch:            # "Run workflow" button in the Actions tab
+    inputs:
+      model_command:
+        description: "Model step to run"
+        type: choice
+        options: [predict, all]
+        default: predict
+
+concurrency:
+  group: daily-pipeline
+  cancel-in-progress: false
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Configure dbt connection
+        run: python -m src.dbt_env
+
+      - name: Ingest current-season CSV files
+        run: python -m src.ingestion.backfill_history --current
+
+      - name: Ingest fixtures and results from the API
+        run: python -m src.ingestion.fetch_api_matches
+
+      - name: Build dbt models and run data tests
+        working-directory: dbt
+        run: dbt build --profiles-dir . --exclude tag:predictions
+
+      - name: Run the prediction model
+        run: python -m src.model.run ${{ inputs.model_command || 'predict' }}
+
+      - name: Build track-record models
+        working-directory: dbt
+        run: dbt build --profiles-dir . --select tag:predictions

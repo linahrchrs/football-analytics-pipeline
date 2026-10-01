@@ -1,8 +1,11 @@
 # Football Analytics Pipeline & Match Predictor
 
+[![CI](https://github.com/linahrchrs/football-analytics-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/linahrchrs/football-analytics-pipeline/actions/workflows/ci.yml)
+[![Daily pipeline](https://github.com/linahrchrs/football-analytics-pipeline/actions/workflows/daily-pipeline.yml/badge.svg)](https://github.com/linahrchrs/football-analytics-pipeline/actions/workflows/daily-pipeline.yml)
+
 An end-to-end data pipeline for European football: historical and daily match data loaded into PostgreSQL, modelled with dbt, used to predict upcoming matches, and published on a live dashboard that tracks the model's real accuracy.
 
-> 🚧 Work in progress. Steps 1 to 4 (ingestion, dbt models and prediction model) are done.
+> 🚧 Work in progress. Steps 1 to 5 are done: the pipeline now runs by itself every day. Next: the live dashboard.
 
 ## Architecture
 
@@ -27,7 +30,7 @@ Premier League, Championship, La Liga, Bundesliga, Serie A, Ligue 1, Eredivisie 
 - [x] **Step 2:** current-season updates from the football-data.org API, with automatic team-name mapping between the two sources
 - [x] **Step 3:** dbt models: unified matches, standings, form, home advantage, with data tests
 - [x] **Step 4:** Elo ratings and prediction model (Elo + Poisson), benchmarked against bookmaker odds
-- [ ] **Step 5:** GitHub Actions automation
+- [x] **Step 5:** GitHub Actions automation: daily pipeline on a cloud PostgreSQL database (Neon), tests on every push
 - [ ] **Step 6:** live Streamlit dashboard
 
 ## Getting started
@@ -125,6 +128,22 @@ cd dbt && dbt build --profiles-dir . --select tag:predictions && cd ..
 | `marts.fct_prediction_results` | Last prediction before each match, with the result and its score |
 | `marts.fct_team_ratings` | Current Elo rating and league rank of every team |
 
+## Automation (step 5)
+
+Two GitHub Actions workflows:
+
+- **CI** (`.github/workflows/ci.yml`) runs the test suite on every push, against a throwaway PostgreSQL service.
+- **Daily pipeline** (`.github/workflows/daily-pipeline.yml`) runs every day at 05:00 UTC, before the day's matches: current-season CSV files → API fixtures and results → dbt models and data tests → predictions → track-record models. It can also be started by hand from the Actions tab.
+
+The daily pipeline writes to a free [Neon](https://neon.tech) PostgreSQL database, which the dashboard will read. It needs two repository secrets (Settings → Secrets and variables → Actions):
+
+| Secret | Value |
+|---|---|
+| `DATABASE_URL` | Neon connection string, starting with `postgresql+psycopg://` |
+| `FOOTBALL_DATA_API_KEY` | football-data.org token |
+
+dbt reads its connection from `DBT_*` variables, which `python -m src.dbt_env` derives from `DATABASE_URL`, so the connection string is stored only once.
+
 ## Checking the data
 
 ```sql
@@ -158,7 +177,8 @@ Database tests run in a separate `football_test` database created automatically,
 │       ├── elo.py                   # step 4: Elo ratings
 │       ├── poisson_model.py         # step 4: features, goals model, metrics
 │       └── run.py                   # step 4: backtest and predictions
-├── sql/init/                        # raw schema, also run by Docker on first start
+├── .github/workflows/               # step 5: CI and daily pipeline
+├── sql/init/                        # raw and model schemas, also run by Docker on first start
 ├── tests/                           # pytest tests and sample CSV files
 ├── dbt/                             # step 3: dbt project
 │   ├── models/staging/              # cleaned sources
