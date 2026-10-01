@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: stg_historical_matches
+    description: Played matches from football-data.co.uk.
+    columns:
+      - name: match_key
+        description: Hash of league, season, home team and away team. A pairing happens once per league season.
+        tests: [unique, not_null]
+      - name: result
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["H", "D", "A"]
+      - name: league_code
+        tests:
+          - relationships:
+              arguments:
+                to: ref('leagues')
+                field: league_code
+
+  - name: stg_api_matches
+    description: Current-season fixtures and results from football-data.org, with canonical team names.
+    columns:
+      - name: api_match_id
+        tests: [unique, not_null]
+      - name: match_key
+        tests: [unique, not_null]
+      - name: teams_mapped
+        description: False when a team is missing from team_name_map.csv (re-run build_team_map).
+        tests:
+          - accepted_values:
+              arguments:
+                values: [true]
+              config:
+                severity: warn

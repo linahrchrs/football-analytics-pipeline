@@ -2,7 +2,7 @@
 
 An end-to-end data pipeline for European football: historical and daily match data loaded into PostgreSQL, modelled with dbt, used to predict upcoming matches, and published on a live dashboard that tracks the model's real accuracy.
 
-> 🚧 Work in progress. Steps 1 and 2 (data ingestion) are done.
+> 🚧 Work in progress. Steps 1 to 3 (ingestion and dbt models) are done.
 
 ## Architecture
 
@@ -25,8 +25,8 @@ Premier League, Championship, La Liga, Bundesliga, Serie A, Ligue 1, Eredivisie 
 
 - [x] **Step 1:** historical backfill from football-data.co.uk
 - [x] **Step 2:** current-season updates from the football-data.org API, with automatic team-name mapping between the two sources
-- [ ] **Step 3:** dbt models: standings, form, home advantage, Elo ratings, with tests
-- [ ] **Step 4:** prediction model (Elo + Poisson), benchmarked against bookmaker odds
+- [x] **Step 3:** dbt models: unified matches, standings, form, home advantage, with data tests
+- [ ] **Step 4:** Elo ratings and prediction model (Elo + Poisson), benchmarked against bookmaker odds
 - [ ] **Step 5:** GitHub Actions automation
 - [ ] **Step 6:** live Streamlit dashboard
 
@@ -75,6 +75,32 @@ python -m src.ingestion.backfill_history --first 2020 --last 2024  # only some s
 python -m src.ingestion.backfill_history --refresh                 # re-download cached files
 ```
 
+## Data models (step 3)
+
+```bash
+cd dbt
+dbt seed --profiles-dir .      # loads team_name_map.csv and leagues.csv
+dbt build --profiles-dir .     # builds every model and runs every test
+```
+
+By default dbt connects to the local Docker database (port 5433). To use another database, set `DBT_HOST`, `DBT_PORT`, `DBT_USER`, `DBT_PASSWORD`, `DBT_DBNAME` and `DBT_SSLMODE`.
+
+| Layer | Model | What it contains |
+|---|---|---|
+| staging | `stg_historical_matches` | Played matches from football-data.co.uk |
+| staging | `stg_api_matches` | Current-season matches from the API, with canonical team names |
+| intermediate | `int_matches_unified` | One row per match from both sources: the CSV is the reference for played matches, the API adds the latest results and every upcoming fixture |
+| intermediate | `int_team_matches` | One row per team per match, which makes team statistics simple aggregations |
+| marts | `fct_matches` | Every match, played or upcoming, with bookmaker probabilities (margin removed) as a benchmark |
+| marts | `fct_standings` | League table for every league and season |
+| marts | `fct_team_form` | Each team's form going into every match, using only earlier matches so it is safe as a model feature |
+| marts | `fct_league_seasons` | Home win rate, draw rate and goals per league and season |
+| marts | `dim_teams` | Teams with the leagues and seasons they played in |
+
+Besides standard tests (unique keys, accepted values, relationships), custom tests check the football logic: points always equal 3 × wins + draws, goals scored equal goals conceded in every league season, and no team plays twice on the same day, which would reveal a duplicate between the two sources.
+
+To browse the models and their lineage graph: `dbt docs generate --profiles-dir .` then `dbt docs serve --profiles-dir .`
+
 ## Checking the data
 
 ```sql
@@ -106,7 +132,12 @@ Parsing tests always run. Database tests run when PostgreSQL is up and are skipp
 │       └── build_team_map.py        # step 2: team-name mapping between sources
 ├── sql/init/                        # raw schema, also run by Docker on first start
 ├── tests/                           # pytest tests and sample CSV files
-├── dbt/seeds/team_name_map.csv      # generated in step 2, used by dbt in step 3
+├── dbt/                             # step 3: dbt project
+│   ├── models/staging/              # cleaned sources
+│   ├── models/intermediate/         # unified matches, one row per team per match
+│   ├── models/marts/                # standings, form, league stats
+│   ├── seeds/                       # team_name_map.csv (step 2), leagues.csv
+│   └── tests/                       # football logic tests
 ├── dashboard/                       # step 6
 └── docker-compose.yml
 ```

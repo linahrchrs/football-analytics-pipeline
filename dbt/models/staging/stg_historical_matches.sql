@@ -1,0 +1,30 @@
+-- Played matches from football-data.co.uk. Team names are already the canonical ones.
+select
+    md5(league_code || '|' || season || '|' || home_team || '|' || away_team) as match_key,
+    league_code,
+    season,
+    match_date,
+    kickoff_time,
+    home_team,
+    away_team,
+    home_goals,
+    away_goals,
+    result,
+    home_goals_ht,
+    away_goals_ht,
+    home_shots,
+    away_shots,
+    home_shots_on_target,
+    away_shots_on_target,
+    home_corners,
+    away_corners,
+    home_yellow_cards,
+    away_yellow_cards,
+    home_red_cards,
+    away_red_cards,
+    odds_home,
+    odds_draw,
+    odds_away,
+    'football-data.co.uk' as source
+from {{ source('raw', 'historical_matches') }}
+where home_goals is not null and away_goals is not null

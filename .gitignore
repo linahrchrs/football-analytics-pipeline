@@ -8,3 +8,7 @@ data/raw/*
 .pytest_cache/
 .DS_Store
 api_test.json
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/.user.yml

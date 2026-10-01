@@ -1,0 +1,15 @@
+# Connection settings. Defaults match the local Docker database (port 5433);
+# set the DBT_* environment variables to point at another database (e.g. Neon).
+football_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DBT_HOST', 'localhost') }}"
+      port: "{{ env_var('DBT_PORT', '5433') | int }}"
+      user: "{{ env_var('DBT_USER', 'football') }}"
+      password: "{{ env_var('DBT_PASSWORD', 'football') }}"
+      dbname: "{{ env_var('DBT_DBNAME', 'football') }}"
+      schema: analytics
+      sslmode: "{{ env_var('DBT_SSLMODE', 'prefer') }}"
+      threads: 4

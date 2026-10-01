@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: Data loaded by the Python ingestion scripts (steps 1 and 2).
+    tables:
+      - name: historical_matches
+        description: Played matches from football-data.co.uk, one row per match.
+      - name: api_matches
+        description: Current-season fixtures and results from football-data.org.

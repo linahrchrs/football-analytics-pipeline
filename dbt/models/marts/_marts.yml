@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: fct_matches
+    description: Every match, played or upcoming, from both sources combined.
+    columns:
+      - name: match_key
+        tests: [unique, not_null]
+      - name: result
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["H", "D", "A"]
+      - name: home_team
+        tests: [not_null]
+      - name: away_team
+        tests: [not_null]
+
+  - name: fct_standings
+    description: League table per league and season.
+    tests:
+      - unique_combination:
+          arguments:
+            columns: [league_code, season, team]
+    columns:
+      - name: points
+        tests: [not_null]
+
+  - name: fct_team_form
+    description: Form of each team before every match, safe to use as model features.
+    columns:
+      - name: form_points_last5
+        description: Points from the previous 5 matches (null for a team's first match).
+
+  - name: fct_league_seasons
+    description: Home advantage and scoring per league and season.
+
+  - name: dim_teams
+    description: Teams with the leagues and seasons they played in.
