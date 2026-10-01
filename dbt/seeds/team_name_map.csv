@@ -1,0 +1,159 @@
+league_code,api_team_id,api_team_name,api_team_short,csv_team_name,method,confidence
+D1,16,FC Augsburg,Augsburg,Augsburg,results,0.8
+D1,5,FC Bayern München,Bayern,Bayern Munich,results,1.0
+D1,4,Borussia Dortmund,Dortmund,Dortmund,results,1.0
+D1,19,Eintracht Frankfurt,Frankfurt,Ein Frankfurt,results,0.8
+D1,719,SV 07 Elversberg,Elversberg,Elversberg,results,0.8
+D1,1,1. FC Köln,1. FC Köln,FC Koln,results,0.8
+D1,17,SC Freiburg,Freiburg,Freiburg,results,0.8
+D1,7,Hamburger SV,HSV,Hamburg,results,0.8
+D1,2,TSG 1899 Hoffenheim,Hoffenheim,Hoffenheim,results,0.8
+D1,3,Bayer 04 Leverkusen,Leverkusen,Leverkusen,results,0.8
+D1,18,Borussia Mönchengladbach,M'gladbach,M'gladbach,results,0.67
+D1,15,1. FSV Mainz 05,Mainz,Mainz,results,0.8
+D1,29,SC Paderborn 07,SC Paderborn,Paderborn,results,1.0
+D1,721,RB Leipzig,RB Leipzig,RB Leipzig,results,0.67
+D1,6,FC Schalke 04,Schalke,Schalke 04,results,0.67
+D1,10,VfB Stuttgart,Stuttgart,Stuttgart,results,1.0
+D1,28,1. FC Union Berlin,Union Berlin,Union Berlin,results,0.8
+D1,12,SV Werder Bremen,Bremen,Werder Bremen,results,1.0
+E0,57,Arsenal FC,Arsenal,Arsenal,results,0.75
+E0,58,Aston Villa FC,Aston Villa,Aston Villa,results,0.83
+E0,1044,AFC Bournemouth,Bournemouth,Bournemouth,fuzzy,0.95
+E0,402,Brentford FC,Brentford,Brentford,fuzzy,0.95
+E0,397,Brighton & Hove Albion FC,Brighton Hove,Brighton,results,0.71
+E0,328,Burnley FC,Burnley,Burnley,fuzzy,0.95
+E0,61,Chelsea FC,Chelsea,Chelsea,results,0.71
+E0,1076,Coventry City FC,Coventry City,Coventry,results,0.71
+E0,354,Crystal Palace FC,Crystal Palace,Crystal Palace,results,0.83
+E0,62,Everton FC,Everton,Everton,fuzzy,0.95
+E0,63,Fulham FC,Fulham,Fulham,results,0.83
+E0,322,Hull City AFC,Hull City,Hull,results,0.62
+E0,349,Ipswich Town FC,Ipswich Town,Ipswich,results,0.83
+E0,341,Leeds United FC,Leeds United,Leeds,results,0.71
+E0,64,Liverpool FC,Liverpool,Liverpool,results,0.71
+E0,65,Manchester City FC,Man City,Man City,results,0.83
+E0,66,Manchester United FC,Man United,Man United,results,0.71
+E0,67,Newcastle United FC,Newcastle,Newcastle,results,0.83
+E0,351,Nottingham Forest FC,Nottingham,Nott'm Forest,results,0.75
+E0,71,Sunderland AFC,Sunderland,Sunderland,results,0.71
+E0,73,Tottenham Hotspur FC,Tottenham,Tottenham,results,0.62
+E0,76,Wolverhampton Wanderers FC,Wolverhampton,Wolves,fuzzy,0.53
+E1,332,Birmingham City FC,Birmingham,Birmingham,fuzzy,0.95
+E1,59,Blackburn Rovers FC,Blackburn,Blackburn,results,0.62
+E1,60,Bolton Wanderers FC,Bolton,Bolton,results,0.62
+E1,387,Bristol City FC,Bristol City,Bristol City,results,0.89
+E1,328,Burnley FC,Burnley,Burnley,fuzzy,0.95
+E1,715,Cardiff City FC,Cardiff,Cardiff,results,0.8
+E1,348,Charlton Athletic FC,Charlton,Charlton,fuzzy,0.95
+E1,342,Derby County FC,Derby County,Derby,results,0.62
+E1,1126,Lincoln City FC,Lincoln City,Lincoln,results,0.62
+E1,343,Middlesbrough FC,Middlesbrough,Middlesbrough,fuzzy,0.95
+E1,384,Millwall FC,Millwall,Millwall,results,0.62
+E1,68,Norwich City FC,Norwich,Norwich,results,0.73
+E1,325,Portsmouth FC,Portsmouth,Portsmouth,results,0.64
+E1,1081,Preston North End FC,Preston NE,Preston,fuzzy,0.95
+E1,69,Queens Park Rangers FC,QPR,QPR,results,0.62
+E1,356,Sheffield United FC,Sheffield Utd,Sheffield United,results,0.73
+E1,340,Southampton FC,Southampton,Southampton,fuzzy,0.95
+E1,70,Stoke City FC,Stoke,Stoke,fuzzy,0.95
+E1,72,Swansea City AFC,Swansea,Swansea,results,0.73
+E1,346,Watford FC,Watford,Watford,results,0.62
+E1,74,West Bromwich Albion FC,West Brom,West Brom,results,0.67
+E1,563,West Ham United FC,West Ham,West Ham,results,0.73
+E1,76,Wolverhampton Wanderers FC,Wolverhampton,Wolves,results,0.7
+E1,404,Wrexham AFC,Wrexham,Wrexham,results,0.73
+F1,532,Angers SCO,Angers SCO,Angers,results,0.62
+F1,519,AJ Auxerre,Auxerre,Auxerre,fuzzy,0.95
+F1,512,Stade Brestois 29,Brest,Brest,fuzzy,0.95
+F1,533,Le Havre AC,Le Havre,Le Havre,results,0.62
+F1,535,Le Mans FC,Le Mans,Le Mans,fuzzy,0.95
+F1,546,Racing Club de Lens,RC Lens,Lens,results,0.62
+F1,521,Lille OSC,Lille,Lille,fuzzy,0.95
+F1,525,FC Lorient,Lorient,Lorient,fuzzy,0.95
+F1,523,Olympique Lyonnais,Olympique Lyon,Lyon,results,0.71
+F1,516,Olympique de Marseille,Marseille,Marseille,results,0.83
+F1,548,AS Monaco FC,Monaco,Monaco,results,0.62
+F1,522,OGC Nice,Nice,Nice,fuzzy,0.95
+F1,1045,Paris FC,Paris FC,Paris FC,fuzzy,0.95
+F1,524,Paris Saint-Germain FC,PSG,Paris SG,results,0.62
+F1,529,Stade Rennais FC 1901,Stade Rennais,Rennes,results,0.62
+F1,576,RC Strasbourg Alsace,Strasbourg,Strasbourg,fuzzy,0.95
+F1,511,Toulouse FC,Toulouse,Toulouse,results,0.62
+F1,531,ES Troyes AC,Troyes,Troyes,results,0.83
+I1,102,Atalanta BC,Atalanta,Atalanta,results,0.71
+I1,103,Bologna FC 1909,Bologna,Bologna,results,0.62
+I1,104,Cagliari Calcio,Cagliari,Cagliari,results,0.83
+I1,7397,Como 1907,Como 1907,Como,results,0.83
+I1,99,ACF Fiorentina,Fiorentina,Fiorentina,results,0.83
+I1,470,Frosinone Calcio,Frosinone,Frosinone,fuzzy,0.95
+I1,107,Genoa CFC,Genoa,Genoa,results,0.71
+I1,108,FC Internazionale Milano,Inter,Inter,results,0.83
+I1,109,Juventus FC,Juventus,Juventus,fuzzy,0.95
+I1,110,SS Lazio,Lazio,Lazio,results,0.71
+I1,5890,US Lecce,Lecce,Lecce,results,0.71
+I1,98,AC Milan,Milan,Milan,results,0.71
+I1,5911,AC Monza,Monza,Monza,results,0.71
+I1,113,SSC Napoli,Napoli,Napoli,results,0.62
+I1,112,Parma Calcio 1913,Parma,Parma,results,0.62
+I1,100,AS Roma,Roma,Roma,results,1.0
+I1,471,US Sassuolo Calcio,Sassuolo,Sassuolo,results,0.83
+I1,586,Torino FC,Torino,Torino,results,0.83
+I1,115,Udinese Calcio,Udinese,Udinese,results,1.0
+I1,454,Venezia FC,Venezia FC,Venezia,results,0.62
+N1,682,AZ,AZ,AZ Alkmaar,fuzzy,0.95
+N1,678,AFC Ajax,Ajax,Ajax,results,0.78
+N1,1909,SC Cambuur-Leeuwarden,Cambuur,Cambuur,results,0.7
+N1,680,ADO Den Haag,Den Haag,Den Haag,fuzzy,0.95
+N1,670,SBV Excelsior,Excelsior,Excelsior,results,1.0
+N1,675,Feyenoord Rotterdam,Feyenoord,Feyenoord,results,0.7
+N1,1920,Fortuna Sittard,Sittard,For Sittard,results,0.7
+N1,718,Go Ahead Eagles,Go Ahead,Go Ahead Eagles,results,0.7
+N1,677,FC Groningen,Groningen,Groningen,results,0.64
+N1,673,SC Heerenveen,Heerenveen,Heerenveen,results,0.64
+N1,1915,NEC,NEC,Nijmegen,results,0.64
+N1,674,PSV,PSV,PSV Eindhoven,results,0.88
+N1,6806,Sparta Rotterdam,Sparta,Sparta Rotterdam,results,1.0
+N1,1912,Telstar 1963,Telstar,Telstar,results,0.88
+N1,666,FC Twente '65,Twente,Twente,results,0.78
+N1,676,FC Utrecht,Utrecht,Utrecht,results,0.78
+N1,672,Willem II Tilburg,Willem II,Willem II,results,0.64
+N1,684,PEC Zwolle,Zwolle,Zwolle,results,0.78
+P1,5527,Académico de Viseu FC,Acad. Viseu,Academico Viseu,results,0.7
+P1,7822,FC Alverca,Alverca,Alverca,results,1.0
+P1,712,FC Arouca,Arouca,Arouca,results,0.78
+P1,1903,Sport Lisboa e Benfica,SL Benfica,Benfica,results,0.64
+P1,6618,Casa Pia AC,Casa Pia,Casa Pia,results,0.7
+P1,582,GD Estoril Praia,Estoril Praia,Estoril,results,0.88
+P1,9136,CF Estrela da Amadora,Amadora,Estrela,results,0.78
+P1,5531,FC Famalicão,Famalicão,Famalicao,results,0.88
+P1,5533,Gil Vicente FC,Gil Vicente,Gil Vicente,results,0.6
+P1,5543,Vitória SC,Vitória SC,Guimaraes,results,0.7
+P1,5575,CS Marítimo,Marítimo,Maritimo,results,0.7
+P1,583,Moreirense FC,Moreirense,Moreirense,fuzzy,0.95
+P1,5529,CD Nacional,CD Nacional,Nacional,results,0.7
+P1,503,FC Porto,Porto,Porto,results,0.88
+P1,496,Rio Ave FC,Rio Ave,Rio Ave,results,0.88
+P1,5530,CD Santa Clara,Santa Clara,Santa Clara,results,0.7
+P1,5613,Sporting Clube de Braga,Braga,Sp Braga,results,0.67
+P1,498,Sporting Clube de Portugal,Sporting CP,Sp Lisbon,results,0.78
+SP1,263,Deportivo Alavés,Alavés,Alaves,results,0.78
+SP1,77,Athletic Club,Athletic,Ath Bilbao,results,0.75
+SP1,78,Club Atlético de Madrid,Atleti,Ath Madrid,results,1.0
+SP1,81,FC Barcelona,Barça,Barcelona,results,0.88
+SP1,90,Real Betis Balompié,Real Betis,Betis,results,0.88
+SP1,558,RC Celta de Vigo,Celta,Celta,results,0.7
+SP1,285,Elche CF,Elche,Elche,results,0.64
+SP1,80,RCD Espanyol de Barcelona,Espanyol,Espanol,results,0.64
+SP1,82,Getafe CF,Getafe,Getafe,results,0.64
+SP1,560,RC Deportivo La Coruña,Deportivo,La Coruna,results,0.64
+SP1,88,Levante UD,Levante,Levante,results,0.86
+SP1,84,Málaga CF,Málaga,Malaga,results,0.7
+SP1,79,CA Osasuna,Osasuna,Osasuna,results,0.88
+SP1,86,Real Madrid CF,Real Madrid,Real Madrid,results,1.0
+SP1,5335,Real Racing Club de Santander,Santander,Santander,results,1.0
+SP1,559,Sevilla FC,Sevilla FC,Sevilla,results,0.7
+SP1,92,Real Sociedad de Fútbol,Real Sociedad,Sociedad,results,1.0
+SP1,95,Valencia CF,Valencia,Valencia,results,0.88
+SP1,87,Rayo Vallecano de Madrid,Rayo Vallecano,Vallecano,results,0.88
+SP1,94,Villarreal CF,Villarreal,Villarreal,results,0.88

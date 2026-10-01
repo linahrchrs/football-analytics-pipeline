@@ -27,3 +27,22 @@ def season_code(start_year: int) -> str:
 def season_label(start_year: int) -> str:
     """2023 -> '2023-24' (the format stored in the database)."""
     return f"{start_year}-{(start_year + 1) % 100:02d}"
+
+
+# ------------------------------------------------------------------ daily API
+API_BASE_URL = "https://api.football-data.org/v4"
+
+# football-data.co.uk league code -> football-data.org competition code
+API_COMPETITIONS = {
+    "E0": "PL",
+    "E1": "ELC",
+    "SP1": "PD",
+    "D1": "BL1",
+    "I1": "SA",
+    "F1": "FL1",
+    "N1": "DED",
+    "P1": "PPL",
+}
+
+# Free tier: 10 requests per minute, so we wait between calls.
+API_SECONDS_BETWEEN_CALLS = 7
