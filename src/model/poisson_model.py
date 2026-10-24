@@ -43,8 +43,9 @@ def add_league_averages(matches: pd.DataFrame, league_seasons: pd.DataFrame) -> 
     latest = ls.groupby("league_code").tail(1).set_index("league_code")
     known = set(zip(ls["league_code"], ls["season"]))
     missing = out["league_home_goals"].isna() & np.array([(l, s) not in known for l, s in zip(out["league_code"], out["season"])], dtype=bool)
-    out.loc[missing, "league_home_goals"] = out.loc[missing, "league_code"].map(latest["avg_home_goals"])
-    out.loc[missing, "league_away_goals"] = out.loc[missing, "league_code"].map(latest["avg_away_goals"])
+    if missing.any():
+        out.loc[missing, "league_home_goals"] = out.loc[missing, "league_code"].map(latest["avg_home_goals"])
+        out.loc[missing, "league_away_goals"] = out.loc[missing, "league_code"].map(latest["avg_away_goals"])s"])
 
     # First season of the data: no previous season, use the overall average.
     out["league_home_goals"] = out["league_home_goals"].fillna(ls["avg_home_goals"].mean())
